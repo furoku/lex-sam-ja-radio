@@ -1,7 +1,7 @@
 /* Shared radio player logic for Lex×Sam JA #367 */
 (function () {
   const CDN = "https://cdn.jsdelivr.net/gh/furoku/lex-sam-ja-radio@main/";
-  const CHAPTERS = [
+  const DEFAULT_CHAPTERS = [
     { id: "ch01", title: "第1章", src: CDN + "audio/ch01.mp3", sub: "0:00 – 12:00" },
     { id: "ch02", title: "第2章", src: CDN + "audio/ch02.mp3", sub: "12:00 – 24:00" },
     { id: "ch03", title: "第3章", src: CDN + "audio/ch03.mp3", sub: "24:00 – 36:00" },
@@ -42,6 +42,8 @@
     const modeFull = $("modeFull");
     const modeCh = $("modeCh");
     if (!audio || !playBtn) return;
+
+    const CHAPTERS = opts.chapters || window.LEX_RADIO_CHAPTERS || DEFAULT_CHAPTERS;
 
     let mode = "full";
     let index = 0;
