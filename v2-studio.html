@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>V2 Warm Studio · Lex × Sam</title>
+  <style>
+    :root{
+      --wood:#3b2416; --cream:#f6e7c9; --ink:#2a1a10; --muted:#8a6b4f;
+      --amber:#e8a04a; --glow:#ffcf70; --line:rgba(74,42,20,.18);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100%; color:var(--ink);
+      font-family: "Iowan Old Style","Palatino Linotype","Hiragino Mincho ProN","Noto Serif JP",serif;
+      background:
+        radial-gradient(800px 400px at 50% -10%, rgba(255,207,112,.35), transparent 60%),
+        linear-gradient(180deg, #f3dfb8 0%, #e8c994 40%, #d7b07a 100%);
+    }
+    body::before{
+      content:""; position:fixed; inset:0; pointer-events:none; opacity:.18;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .nav{display:flex;gap:8px;flex-wrap:wrap;padding:16px 18px 0;max-width:880px;margin:0 auto;position:relative;z-index:1}
+    .nav a{color:var(--muted);text-decoration:none;font-size:12px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.35);font-family:system-ui,sans-serif}
+    .nav a.on{background:var(--wood);color:var(--cream);border-color:var(--wood);font-weight:700}
+    .wrap{max-width:880px;margin:0 auto;padding:14px 18px 80px;position:relative;z-index:1}
+    .console{
+      background: linear-gradient(160deg,#5a3722,#3a2214 55%,#2c180f);
+      border-radius:28px; padding:18px; box-shadow:0 30px 70px rgba(80,40,10,.35), inset 0 1px 0 rgba(255,255,255,.12);
+      border:1px solid rgba(255,220,160,.15);
+    }
+    .faceplate{
+      background: linear-gradient(180deg,#f8ecd2,#edd5a4);
+      border-radius:20px; padding:22px; box-shadow:inset 0 0 0 1px rgba(90,50,20,.12);
+    }
+    .toprow{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+    .brand{font-family:system-ui,sans-serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+    .onair{font-family:system-ui,sans-serif;font-size:11px;font-weight:700;color:#7a2e12;background:#ffd9a8;border-radius:999px;padding:6px 10px}
+    h1{margin:0 0 6px;font-size:clamp(1.5rem,3.5vw,2.1rem);letter-spacing:-.02em}
+    .sub{margin:0 0 16px;color:var(--muted);font-size:14px;line-height:1.65}
+    .meters{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+    .meter{background:rgba(60,30,10,.06);border-radius:14px;padding:12px}
+    .meter label{display:block;font-family:system-ui,sans-serif;font-size:11px;color:var(--muted);margin-bottom:6px;letter-spacing:.08em;text-transform:uppercase}
+    .needle-box{height:10px;background:rgba(0,0,0,.08);border-radius:999px;overflow:hidden}
+    .needle{height:100%;width:0;background:linear-gradient(90deg,#c47a2a,var(--amber),#fff1c8);transition:width .15s linear}
+    .now-title{font-weight:700;font-size:1.05rem}
+    .now-meta{font-family:system-ui,sans-serif;font-size:12px;color:var(--muted);margin-top:4px}
+    .progress-wrap{height:12px;border-radius:999px;background:rgba(60,30,10,.1);cursor:pointer;overflow:hidden;margin:16px 0 8px}
+    .progress-fill{height:100%;width:0;background:linear-gradient(90deg,#b86a22,var(--amber));position:relative}
+    .progress-fill::after{content:"";position:absolute;right:0;top:50%;width:16px;height:16px;transform:translate(40%,-50%);border-radius:50%;background:#fff8e8;border:2px solid #b86a22;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+    .times{display:flex;justify-content:space-between;font-family:ui-monospace,monospace;font-size:12px;color:var(--muted);margin-bottom:14px}
+    .controls{display:flex;justify-content:center;align-items:center;gap:12px;margin:10px 0 16px}
+    button{font:inherit;border:0;cursor:pointer;background:transparent;color:inherit}
+    .btn{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:#efe0c0;border:1px solid rgba(80,40,15,.15);box-shadow:0 4px 0 rgba(80,40,15,.12);font-family:system-ui,sans-serif}
+    .btn:active{transform:translateY(2px);box-shadow:none}
+    .btn.main{width:78px;height:78px;background:radial-gradient(circle at 35% 30%,#ffd27a,#d98a2f 55%,#9b5418);color:#fffaf0;font-size:28px;border:0;box-shadow:0 8px 0 #7a4214,0 14px 30px rgba(150,70,10,.35)}
+    .row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-family:system-ui,sans-serif;font-size:13px;color:var(--muted)}
+    select{background:#fff8e8;border:1px solid var(--line);border-radius:10px;padding:6px 8px;color:var(--ink)}
+    input[type=range]{accent-color:var(--amber)}
+    .mode{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0 10px;font-family:system-ui,sans-serif}
+    .mode button{padding:12px;border-radius:12px;background:rgba(60,30,10,.06);color:var(--muted);font-weight:700}
+    .mode button.active{background:var(--wood);color:var(--cream)}
+    .chapters{display:grid;gap:8px;max-height:320px;overflow:auto}
+    .ch{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:12px;border-radius:14px;background:rgba(255,255,255,.45);text-align:left;border:1px solid transparent;font-family:system-ui,sans-serif}
+    .ch.active{border-color:rgba(184,106,34,.45);background:#fff6e4}
+    .ch-num{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:#efe0c0;color:var(--muted)}
+    .ch.active .ch-num{background:var(--amber);color:#3b1d08}
+    .ch-title{font-weight:700;font-size:14px}.ch-sub,.ch-dur{font-size:12px;color:var(--muted)}
+    .eq{display:flex;align-items:flex-end;gap:3px;height:18px}.eq span{width:4px;border-radius:2px;background:var(--amber);animation:eq 1s ease-in-out infinite;height:40%}
+    .eq span:nth-child(2){animation-delay:.12s;height:75%}.eq span:nth-child(3){animation-delay:.24s;height:55%}.eq span:nth-child(4){animation-delay:.36s;height:90%}
+    @keyframes eq{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
+    .eq.paused span{animation:none;height:20%!important;opacity:.4}
+    .foot{margin-top:14px;text-align:center;font-family:system-ui,sans-serif;font-size:12px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <a href="./">Hub</a>
+    <a href="v1-midnight.html">V1 Midnight</a>
+    <a class="on" href="v2-studio.html">V2 Studio</a>
+    <a href="v3-terminal.html">V3 Terminal</a>
+  </div>
+  <div class="wrap">
+    <div class="console">
+      <div class="faceplate">
+        <div class="toprow">
+          <div class="brand">Warm Studio Radio · Series 367</div>
+          <div class="onair">● ON AIR</div>
+        </div>
+        <h1>Lex × Sam · 日本語スタジオ</h1>
+        <p class="sub">ウッドコンソールとアンバーの針。夕方の収録ブースで流れる長尺対談。</p>
+
+        <div class="meters">
+          <div class="meter"><label>Left / Lex</label><div class="needle-box"><div class="needle" id="mL"></div></div></div>
+          <div class="meter"><label>Right / Sam</label><div class="needle-box"><div class="needle" id="mR"></div></div></div>
+        </div>
+
+        <div class="now-title" id="nowTitle">フル通し</div>
+        <div class="now-meta" id="nowMeta">準備中</div>
+        <div class="progress-wrap" id="seek"><div class="progress-fill" id="bar"></div></div>
+        <div class="times"><span id="cur">0:00</span><span id="dur">--:--</span></div>
+
+        <div class="controls">
+          <button class="btn" id="prev">⏮</button>
+          <button class="btn" id="back15">−15</button>
+          <button class="btn main" id="play">▶</button>
+          <button class="btn" id="fwd15">+15</button>
+          <button class="btn" id="next">⏭</button>
+        </div>
+        <div class="row">
+          <div>
+            <label>速度 <select id="speed"><option value="0.9">0.9×</option><option value="1" selected>1.0×</option><option value="1.1">1.1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option></select></label>
+            <label style="margin-left:10px">音量 <input id="vol" type="range" min="0" max="1" step="0.01" value="1" /></label>
+          </div>
+          <div class="eq paused" id="eq"><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div class="mode"><button class="active" id="modeFull">フル通し</button><button id="modeCh">チャプター</button></div>
+        <div class="chapters" id="chapters" hidden></div>
+      </div>
+    </div>
+    <p class="foot">Warm Studio · design variation B</p>
+  </div>
+  <div id="vinyl" hidden></div>
+  <audio id="audio" preload="metadata"></audio>
+  <script src="player.js"></script>
+  <script>
+    initLexRadio();
+    // fake VU meters linked to play state
+    const audio=document.getElementById('audio');
+    const mL=document.getElementById('mL'), mR=document.getElementById('mR');
+    let t=0;
+    setInterval(()=>{
+      const playing=!audio.paused && !audio.ended;
+      if(!playing){ mL.style.width='8%'; mR.style.width='6%'; return; }
+      t+=1;
+      mL.style.width=(35+Math.abs(Math.sin(t/4))*50)+'%';
+      mR.style.width=(30+Math.abs(Math.cos(t/5))*55)+'%';
+    },120);
+  </script>
+</body>
+</html>
